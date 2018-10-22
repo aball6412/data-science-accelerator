@@ -81,3 +81,26 @@ made_up_time <- filter(flights, dep_delay >= 60, (arr_delay < dep_delay & (dep_d
 ```r
 bet_midnight_and_6 <- filter(flights, dep_time >= 0 & dep_time <= 600)
 ```
+
+=======================================================================================================
+
+### 2. Another useful dplyr filtering helper is between(). What does it do? Can you use it to simplify the code needed to answer the previous challenges?
+
+### Answer:
+The `between()` function provides a shorthand for stating that a particular variable is in the middle of two values. For example, the `filter(flights, dep_time >= 0 & dep_time <= 600)` code block above could be simplified to `filter(flights, between(dep_time, 0, 600))`
+
+=======================================================================================================
+
+### 3. How many flights have a missing dep_time? What other variables are missing? What might these rows represent?
+
+### Answer:
+There are 8,255 observations that have a missing `dep_time`. Additionally, `dep_delay`, `arr_time`, and `arr_delay` values are also missing. These observations probably represent flights that were canceled.
+
+=======================================================================================================
+
+### 4. Why is NA ^ 0 not missing? Why is NA | TRUE not missing? Why is FALSE & NA not missing? Can you figure out the general rule? (NA * 0 is a tricky counterexample!)
+
+### Answer:
+`NA ^ 0` is not missing because anything to the 0 power evaluates to 1 so no matter what NA is in this situation the result will be 1. `NA | TRUE` is not missing because that logic will ALWAYS at _least_ evaluate to `TRUE` due to the OR part of the statement. `FALSE & NA` is not missing because no matter what NA is the result of this expression will either be `TRUE` or `FALSE`. The general rule is if a statement can be evaluated _regardless_ of what the NA value is then the result will NOT be NA even if an NA value is present. Otherwise, it will most likely be evaluated to NA.
+
+## Section 5.3.1
