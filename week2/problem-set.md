@@ -1,4 +1,4 @@
-## Section 4.4
+# Section 4.4
 
 ### 1. Why does this code not work?
 
@@ -11,7 +11,7 @@ my_varıable
 ### Answer:
 This code does not work because "my_variable" is spelled wrong on the second line. Fix the spelling mistake and that will fix the issue. 
 
-=======================================================================================================
+-----------------------------------------------------------------------------------------------------
 
 ### 2. Tweak each of the following R commands so that they run correctly:
 ```r
@@ -30,14 +30,14 @@ A couple of things need to be changed in order to get this code to work.
 2. `fliter(mpg, cyl = 8)` has `filter` misspelled and needs two `==` signs to make it work.
 3. `filter(diamond, carat > 3)` is referencing  a `diamond` data frame when it SHOULD be `diamonds`(plural)
 
-=======================================================================================================
+-----------------------------------------------------------------------------------------------------
 
 ### 3. Press Alt + Shift + K. What happens? How can you get to the same place using the menus?
 Pressing Alt + Shift + K causes the keyboard shortcut list to pop-up. To get this same list to pop-up from the menu, simply go to tools > Keyboard Shortcuts Help. 
 
-=======================================================================================================
+-----------------------------------------------------------------------------------------------------
 
-## Section 5.2.4
+# Section 5.2.4
 
 ### 1. Find all flights that:
 * First import packages and declare flights variable:
@@ -82,30 +82,30 @@ made_up_time <- filter(flights, dep_delay >= 60, (arr_delay < dep_delay & (dep_d
 bet_midnight_and_6 <- filter(flights, dep_time >= 0 & dep_time <= 600)
 ```
 
-=======================================================================================================
+-----------------------------------------------------------------------------------------------------
 
 ### 2. Another useful dplyr filtering helper is between(). What does it do? Can you use it to simplify the code needed to answer the previous challenges?
 
 ### Answer:
 The `between()` function provides a shorthand for stating that a particular variable is in the middle of two values. For example, the `filter(flights, dep_time >= 0 & dep_time <= 600)` code block above could be simplified to `filter(flights, between(dep_time, 0, 600))`
 
-=======================================================================================================
+-----------------------------------------------------------------------------------------------------
 
 ### 3. How many flights have a missing dep_time? What other variables are missing? What might these rows represent?
 
 ### Answer:
 There are 8,255 observations that have a missing `dep_time`. Additionally, `dep_delay`, `arr_time`, and `arr_delay` values are also missing. These observations probably represent flights that were canceled.
 
-=======================================================================================================
+-----------------------------------------------------------------------------------------------------
 
 ### 4. Why is NA ^ 0 not missing? Why is NA | TRUE not missing? Why is FALSE & NA not missing? Can you figure out the general rule? (NA * 0 is a tricky counterexample!)
 
 ### Answer:
 `NA ^ 0` is not missing because anything to the 0 power evaluates to 1 so no matter what NA is in this situation the result will be 1. `NA | TRUE` is not missing because that logic will ALWAYS at _least_ evaluate to `TRUE` due to the OR part of the statement. `FALSE & NA` is not missing because no matter what NA is the result of this expression will either be `TRUE` or `FALSE`. The general rule is if a statement can be evaluated _regardless_ of what the NA value is then the result will NOT be NA even if an NA value is present. Otherwise, it will most likely be evaluated to NA.
 
-=======================================================================================================
+-----------------------------------------------------------------------------------------------------
 
-## Section 5.3.1
+# Section 5.3.1
 
 ### 1. How could you use arrange() to sort all missing values to the start? (Hint: use is.na()).
 
@@ -114,7 +114,7 @@ There are 8,255 observations that have a missing `dep_time`. Additionally, `dep_
 missing_values_first <- arrange(flights, desc(is.na(dep_time)))
 ```
 
-=======================================================================================================
+-----------------------------------------------------------------------------------------------------
 
 ### 2. Sort flights to find the most delayed flights. Find the flights that left earliest.
 
@@ -128,7 +128,7 @@ Flights that left earliest:
 earliest_departures <- arrange(flights, dep_delay)
 ```
 
-=======================================================================================================
+-----------------------------------------------------------------------------------------------------
 
 ### 3. Sort flights to find the fastest flights.
 
@@ -137,7 +137,7 @@ earliest_departures <- arrange(flights, dep_delay)
 fastest_flights <- arrange(flights, air_time)
 ```
 
-=======================================================================================================
+-----------------------------------------------------------------------------------------------------
 
 ### 4. Which flights travelled the longest? Which travelled the shortest?
 
@@ -151,9 +151,9 @@ __Shortest (distance):__ Flights from EWR to PHL (Newark to Philadelphia)
 shortest_flights <- arrange(flights, distance)
 ```
 
-=======================================================================================================
+-----------------------------------------------------------------------------------------------------
 
-## Section 5.4.1
+# Section 5.4.1
 
 ### 2. What happens if you include the name of a variable multiple times in a select() call?
 
@@ -161,6 +161,8 @@ shortest_flights <- arrange(flights, distance)
 R will disregard any additional times that the variable is included.
 Example:
 `select(flights, dep_time, arr_time)` and `select(flights, dep_time, arr_time, dep_time)` yield the exact same results.
+
+-----------------------------------------------------------------------------------------------------
 
 ### 3. What does the one_of() function do? Why might it be helpful in conjunction with this vector?
 ```r
@@ -173,6 +175,8 @@ The `one_of()` function selects all variables that are present in a particular c
 vars <- c("year", "month", "day", "dep_delay", "arr_delay")
 selected_columns <- select(flights, one_of(vars))
 ```
+
+-----------------------------------------------------------------------------------------------------
 
 ### 4. Does the result of running the following code surprise you? How do the select helpers deal with case by default? How can you change that default?
 ```r
