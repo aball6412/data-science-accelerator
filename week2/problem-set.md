@@ -103,4 +103,81 @@ There are 8,255 observations that have a missing `dep_time`. Additionally, `dep_
 ### Answer:
 `NA ^ 0` is not missing because anything to the 0 power evaluates to 1 so no matter what NA is in this situation the result will be 1. `NA | TRUE` is not missing because that logic will ALWAYS at _least_ evaluate to `TRUE` due to the OR part of the statement. `FALSE & NA` is not missing because no matter what NA is the result of this expression will either be `TRUE` or `FALSE`. The general rule is if a statement can be evaluated _regardless_ of what the NA value is then the result will NOT be NA even if an NA value is present. Otherwise, it will most likely be evaluated to NA.
 
+=======================================================================================================
+
 ## Section 5.3.1
+
+### 1. How could you use arrange() to sort all missing values to the start? (Hint: use is.na()).
+
+### Answer: 
+```r
+missing_values_first <- arrange(flights, desc(is.na(dep_time)))
+```
+
+=======================================================================================================
+
+### 2. Sort flights to find the most delayed flights. Find the flights that left earliest.
+
+### Answer:
+Most delayed flights:
+```r
+most_delayed <- arrange(flights, desc(dep_delay))
+```
+Flights that left earliest:
+```r
+earliest_departures <- arrange(flights, dep_delay)
+```
+
+=======================================================================================================
+
+### 3. Sort flights to find the fastest flights.
+
+### Answer:
+```r
+fastest_flights <- arrange(flights, air_time)
+```
+
+=======================================================================================================
+
+### 4. Which flights travelled the longest? Which travelled the shortest?
+
+### Answer:
+__Longest (distance):__ Flights from JFK to HNL (NYC to Hawaii)
+```r
+longest_flights <- arrange(flights, desc(distance))
+```
+__Shortest (distance):__ Flights from EWR to PHL (Newark to Philadelphia)
+```r
+shortest_flights <- arrange(flights, distance)
+```
+
+=======================================================================================================
+
+## Section 5.4.1
+
+### 2. What happens if you include the name of a variable multiple times in a select() call?
+
+### Answer: 
+R will disregard any additional times that the variable is included.
+Example:
+`select(flights, dep_time, arr_time)` and `select(flights, dep_time, arr_time, dep_time)` yield the exact same results.
+
+### 3. What does the one_of() function do? Why might it be helpful in conjunction with this vector?
+```r
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+```
+
+### Answer:
+The `one_of()` function selects all variables that are present in a particular character vector. So for example running the following code block will create a data frame that only has the columns defined in the vars vector.
+```r
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+selected_columns <- select(flights, one_of(vars))
+```
+
+### 4. Does the result of running the following code surprise you? How do the select helpers deal with case by default? How can you change that default?
+```r
+select(flights, contains("TIME"))
+```
+
+### Answer:
+No the result is not surprising. By default, select helpers are NOT case sensitive. If a user wants to perform a case sensitive match then they need to set the parameter `ignore.case` to `TRUE` when calling the function.
