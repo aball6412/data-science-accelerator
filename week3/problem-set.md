@@ -384,3 +384,5 @@ switch(x,
 
 ### Answer:
 This switch statement is saying that if `x` is either "a" or "b" then return "ab". If `x` is either "cd" or "d" then return "cd". Otherwise, return nothing. Nothing is returned if `x` is "e".
+
+-----------------------------------------------------------------------------------------------------
