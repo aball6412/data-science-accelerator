@@ -236,3 +236,151 @@ before_delays <- flights %>%
   filter(!is.na(before.long.delay)) %>%
   summarise(before.long.delay = max(before.long.delay, na.rm=T))
 ```
+
+-----------------------------------------------------------------------------------------------------
+
+# Section 19.3.1
+
+### 1. Read the source code for each of the following three functions, puzzle out what they do, and then brainstorm better names.
+```r
+f1 <- function(string, prefix) {
+  substr(string, 1, nchar(prefix)) == prefix
+}
+f2 <- function(x) {
+  if (length(x) <= 1) return(NULL)
+  x[-length(x)]
+}
+f3 <- function(x, y) {
+  rep(y, length.out = length(x))
+}
+```
+### Answer:
+The `F1` functionchecks to see if the prefix provided is part of the string provided. It returns a boolean. A better name for this function would be `has_prefix()`.
+The `F2` function removes the last item in a vector (if the vector length is greater than 1). A better name for this function would be `remove_last_item()`.
+The `F3` function takes in an `x` and `y` value and replicates the `y` value `length of x` times into it's own vector. A better name for this function would be `vector_replication_fill()`
+
+-----------------------------------------------------------------------------------------------------
+
+### 2. Take a function that you’ve written recently and spend 5 minutes brainstorming a better name for it and its arguments.
+
+### Answer:
+I wrote a function called `switchTabs()` that took in two arguements `tabs` and `contentId`. A better name for that function in this case would have been `switchPanel()` since the function was really switching both the highlighted tab (think tabs at the top of the chrome browser) and the content that was associated with it. I also changed the arguement `tab` to `activeTab` since this argument represented what the new active tab was going to be.
+
+-----------------------------------------------------------------------------------------------------
+
+### 3. Compare and contrast `rnorm()` and `MASS::mvrnorm()`. How could you make them more consistent?
+
+### Answer:
+You could create a variable name called `mvrnorm` and assign `MASS::mvrnorm()` to it so that the naming is more consistent across your codebase.
+
+### 4. Make a case for why `norm_r()`, `norm_d()` etc would be better than `rnorm()`, `dnorm()`. Make a case for the opposite.
+
+### Answer:
+`norm_r` and `norm_d` could be better names because the autocomplete in RStudio would show you all available function names when you start typing `norm`. Hence, if you forget the exact name you'll be more easily to find it just by typing the first few letters.
+The opposite case could be made, however, if you already have a pattern that utilizes an `rnorm`, `dnorm` type of naming convention for distribution functions (or if this is a common convention). In that case it would be better to stick with the conventions that are already in existance.
+
+-----------------------------------------------------------------------------------------------------
+
+# Section 19.4.4
+
+### 1. What’s the difference between `if` and `ifelse()`? Carefully read the help and construct three examples that illustrate the key differences.
+
+### Answer:
+`ifelse()` is like a shorthand version of the typical `if` / `else` statements for use on vectors. It'll go through a vector and perform a comparision on each item of the vector based on the statement that you put in the parentheses of the `ifelse()`. Your statement will contain both the if and the else part. `if` on the other hand focuses just on the affirmative part of the statement. There doesn't need to be an `else` part if you don't need it and it can also work on non-vector datatypes and values.
+
+-----------------------------------------------------------------------------------------------------
+
+### 2. Write a greeting function that says “good morning”, “good afternoon”, or “good evening”, depending on the time of day. (Hint: use a time argument that defaults to `lubridate::now()`. That will make it easier to test your function.)
+
+### Answer:
+```r
+time_of_day <- function() {
+  current_time <- lubridate::now()
+  current_hour <- lubridate::hour(current_time)
+  if(current_hour >= 0 && current_hour < 12) {
+    print("Good morning")
+  } else if(current_hour >= 12 && current_hour < 5) {
+    print("Good afternoon")
+  } else if(current_hour >= 5 && current_hour < 24) {
+    print("Good evening")
+  }
+}
+```
+
+-----------------------------------------------------------------------------------------------------
+
+### 3. Implement a `fizzbuzz` function. It takes a single number as input. If the number is divisible by three, it returns “fizz”. If it’s divisible by five it returns “buzz”. If it’s divisible by three and five, it returns “fizzbuzz”. Otherwise, it returns the number. Make sure you first write working code before you create the function.
+
+### Answer:
+```r
+fizzbuzz <- function(number) {
+  output <- ''
+  is_divisible_3 <- FALSE
+  is_divisible_5 <- FALSE
+  if(number %% 3 == 0 && number != 0) {
+    is_divisible_3 <- TRUE
+  }
+  if(number %% 5 == 0 && number != 0) {
+    is_divisible_5 <- TRUE
+  }
+  if(is_divisible_3) {
+    output <- paste(output, 'fizz', sep='')
+  } 
+  if(is_divisible_5) {
+    output <- paste(output, 'buzz', sep='')
+  }
+  if(!is_divisible_3 && !is_divisible_5) {
+    output <- toString(number)
+  }
+  print(output)
+}
+```
+
+-----------------------------------------------------------------------------------------------------
+
+### 4. How could you use cut() to simplify this set of nested if-else statements?
+```r
+if (temp <= 0) {
+  "freezing"
+} else if (temp <= 10) {
+  "cold"
+} else if (temp <= 20) {
+  "cool"
+} else if (temp <= 30) {
+  "warm"
+} else {
+  "hot"
+}
+```
+### How would you change the call to `cut()` if I’d used `<` instead of `<=`? What is the other chief advantage of `cut()` for this problem? (Hint: what happens if you have many values in `temp`?)
+
+### Answer:
+```r
+cut(c(number), c(-Inf, 0, 10, 20, 30, Inf), labels=c('freezing', 'cold', 'cool', 'warm', 'hot'))
+```
+If we used `<` instead of `<=` then we would add the parameter `right=FALSE` so that the last item in the range is NOT included.
+```r
+cut(c(number), c(-Inf, 0, 10, 20, 30, Inf), labels=c('freezing', 'cold', 'cool', 'warm', 'hot'), right=F)
+```
+
+-----------------------------------------------------------------------------------------------------
+
+### 5. What happens if you use switch() with numeric values?
+
+### Answer:
+R will throw the following error `Error: unexpected '=' in "switch(...)`.
+
+-----------------------------------------------------------------------------------------------------
+
+### 6. What does this `switch()` call do? What happens if `x` is “e”?
+```r
+switch(x, 
+  a = ,
+  b = "ab",
+  c = ,
+  d = "cd"
+)
+```
+
+### Answer:
+This switch statement is saying that if `x` is either "a" or "b" then return "ab". If `x` is either "cd" or "d" then return "cd". Otherwise, return nothing. Nothing is returned if `x` is "e".
