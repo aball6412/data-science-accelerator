@@ -155,3 +155,155 @@ for (i in seq_along(distribution_vector)) {
   print(rnorm(10, mean_val))
 }
 ```
+
+-----------------------------------------------------------------------------------------------------
+
+### 2. Eliminate the for loop in each of the following examples by taking advantage of an existing function that works with vectors:
+```r
+out <- ""
+for (x in letters) {
+  out <- stringr::str_c(out, x)
+}
+
+x <- sample(100)
+sd <- 0
+for (i in seq_along(x)) {
+  sd <- sd + (x[i] - mean(x)) ^ 2
+}
+sd <- sqrt(sd / (length(x) - 1))
+
+x <- runif(100)
+out <- vector("numeric", length(x))
+out[1] <- x[1]
+for (i in 2:length(x)) {
+  out[i] <- out[i - 1] + x[i]
+}
+```
+
+### Answer:
+```r
+paste(letters, collapse = '')
+
+sd(sample(100))
+
+cumsum(runif(100))
+```
+
+-----------------------------------------------------------------------------------------------------
+
+### 3. Combine your function writing and for loop skills:
+### Answer:
+1. Write a for loop that `prints()` the lyrics to the children’s song “Alice the camel”.
+```r
+alice_camel_sentences <- function(number) {
+  if(number == 0) {
+    number <- "no"
+  } else {
+    number_conversion <- list("one", "two", "three", "four", "five")
+    number <- number_conversion[[number]]
+  }
+  for(i in 1:3) {
+    sentence <- paste("Alice the camel has", number, "humps.")
+    print(sentence)
+  }
+}
+
+for(i in 5:0) {
+  alice_camel_sentences(i)
+  
+  if(i > 0) {
+    print("So go, Alice, go.")
+    print("")
+  } else {
+    print("Now Alice is a horse.")
+  }
+}
+```
+
+2. Convert the nursery rhyme “ten in the bed” to a function. Generalise it to any number of people in any sleeping structure.
+```r
+print_verse <- function(number) {
+  line_one <- paste("There were", number, "in a bed")
+  line_two <- "And the little one said"
+  line_three <- "Roll over, roll over"
+  line_four <- "So they all rolled over"
+  line_five <- "And one fell out"
+  print(line_one)
+  if(number > 1) {
+    print(line_two)
+    print(line_three)
+    print(line_four)
+    print(line_five)
+  } else {
+    print("And the little one said")
+    print("Good night!")
+  }
+}
+
+ten_in_the_bed <- function(total) {
+  for(i in total:1) {
+    print_verse(i)
+    print("")
+  }
+}
+```
+
+3. Convert the song “99 bottles of beer on the wall” to a function. Generalise to any number of any vessel containing any liquid on any surface.
+```r
+print_verse <- function(starting_number, number, vessel, liquid, place) {
+  if(number > 0) {
+    first_line <- paste(number, vessel, "of", liquid, "on the", place, number, vessel, "of", liquid)
+    second_line <- paste("Take one down and pass it around,", (number - 1), vessel, "of", liquid, "on the", place)
+  } else {
+    first_line <- paste("No more", vessel, "of", liquid, "on the", place, number, "more", vessel, "of", liquid)
+    second_line <- paste("Go to the store and buy some more,", starting_number, vessel, "of", liquid, "on the", place)
+  }
+  print(first_line)
+  print(second_line)
+}
+
+ninety_bottles_of_beer <- function(number) {
+  for(i in number:0) {
+    print_verse(number, i, "bottles", "beer", "wall")
+    print("")
+  }
+}
+```
+
+-----------------------------------------------------------------------------------------------------
+
+### 4. It’s common to see for loops that don’t preallocate the output and instead increase the length of a vector at each step:
+```r
+output <- vector("integer", 0)
+for (i in seq_along(x)) {
+  output <- c(output, lengths(x[[i]]))
+}
+output
+```
+### How does this affect performance? Design and execute an experiment.
+
+### Answer:
+Structuring the loop in this way causes a significant decrease in performance. Meaning, that it takes a lot longer to process/build the new vector. To prove this point I ran the following two pieces of code 3 times each:
+
+```r
+x <- c(1:1000)
+start_time <- Sys.time()
+for (i in seq_along(x)) {
+  output <- c(output, lengths(x[[i]]))
+}
+end_time <- Sys.time()
+end_time - start_time
+```
+
+```r
+x <- c(1:1000)
+output <- vector("integer", ncol(x))
+start_time <- Sys.time()
+for (i in seq_along(x)) {
+  output[[i]] <- x[[i]]
+}
+end_time <- Sys.time()
+end_time - start_time
+```
+
+Running the first block of un-optimized code resulted in run times of 0.1832931, 0.1306579, and 0.1808679 secs, respectively. Running the optimized code resulted in times of 0.014184, 0.008065939, and 0.008728027 secs, respectively. So, as we can see, the un-optimized code had an average run time of 0.1650 seconds and the optimized code had an average run time of 0.0103 seconds. This shows that the optimized code is about 16 times faster than the un-optimized code.
