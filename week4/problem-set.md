@@ -307,3 +307,52 @@ end_time - start_time
 ```
 
 Running the first block of un-optimized code resulted in run times of 0.1832931, 0.1306579, and 0.1808679 secs, respectively. Running the optimized code resulted in times of 0.014184, 0.008065939, and 0.008728027 secs, respectively. So, as we can see, the un-optimized code had an average run time of 0.1650 seconds and the optimized code had an average run time of 0.0103 seconds. This shows that the optimized code is about 16 times faster than the un-optimized code.
+
+-----------------------------------------------------------------------------------------------------
+
+# Section 21.3.5
+
+### 1. Imagine you have a directory full of CSV files that you want to read in. You have their paths in a vector, `files <- dir("data/", pattern = "\\.csv$", full.names = TRUE)`, and now want to read each one with `read_csv()`. Write the for loop that will load them into a single data frame.
+
+### Answer:
+```r
+df <- data.frame(Author=character(), Title=character(), Number.of.pages=numeric()) 
+files <- dir("data/", pattern = "\\.csv$", full.names = TRUE)
+for (i in files) {
+  new_df <- read_csv(i)
+  df <- rbind(df, new_df)
+}
+```
+
+-----------------------------------------------------------------------------------------------------
+
+### 2. What happens if you use `for (nm in names(x))` and `x` has no names? What if only some of the elements are named? What if the names are not unique?
+
+### Answer:
+1. If `x` has no names then the loop won't execute and the program will continue on with commands that follow the loop.
+
+2. If only some elements are names then `nm` will result in an empty string for the elements that are not named.
+
+3. If the names are not unique then then `nm` will show the non-unique names more than once during the loop."
+
+-----------------------------------------------------------------------------------------------------
+
+### 3. Write a function that prints the mean of each numeric column in a data frame, along with its name. For example, `show_mean(iris)` would print: (Extra challenge: what function did I use to make sure that the numbers lined up nicely, even though the variable names had different lengths?)
+```r
+show_mean(iris)
+#> Sepal.Length: 5.84
+#> Sepal.Width:  3.06
+#> Petal.Length: 3.76
+#> Petal.Width:  1.20
+```
+
+### Answer:
+```r
+for(nm in names(dplyr::select_if(iris, is.numeric))) {
+  column <- iris[nm]
+  mean <- colMeans(column, na.rm=T)
+  print(mean, digits=3, justify="right")
+}
+```
+
+-----------------------------------------------------------------------------------------------------
