@@ -356,3 +356,27 @@ for(nm in names(dplyr::select_if(iris, is.numeric))) {
 ```
 
 -----------------------------------------------------------------------------------------------------
+
+
+# Section 21.5.3
+
+### 1. Write code that uses one of the map functions to:
+1. Compute the mean of every column in mtcars.
+```r
+col_means <- map_dbl(mtcars, mean)
+```
+2. Determine the type of each column in nycflights13::flights.
+```r
+col_types <- map_chr(flights, typeof)
+```
+3. Compute the number of unique values in each column of iris.
+```r
+unique_values <- iris %>%
+  map(unique) %>%
+  map_int(length)
+```
+4. Generate 10 random normals for each of mew = -10, 0, 10, and 100
+```r
+random_normals <- function(variance, number = 10) rnorm(number, variance)
+vapply(c(-10, 0, 10, 100), random_normals, double(10))
+```
