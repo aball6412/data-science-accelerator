@@ -1,0 +1,111 @@
+---
+title: "Emissions Analysis"
+output: html_notebook
+---
+```{r echo=FALSE}
+library(dplyr)
+library(ggplot2)
+classification_codes <- readRDS('data/Source_Classification_Code.rds')
+emissions_data <- readRDS('data/summarySCC_PM25.rds')
+```
+
+By looking at the chart below (which shows the total emissions generated per year) that emissions _have_, in fact, gone down from the years 1999 to 2008.
+
+```{r}
+emission_summary <- emissions_data %>%
+  group_by(year) %>%
+  summarize(total_emissions = sum(Emissions/ 1000000))
+plot(
+  emission_summary$year, 
+  emission_summary$total_emissions, 
+  pch=16, ylab = 'Total Emissions in tons (millions)', 
+  xlab = 'Year',
+  main = 'Total Emissions by year'
+  )
+lines(emission_summary$year, emission_summary$total_emissions)
+```
+
+We, also, see that the total emissions in Baltimore City, MD have gone down from 1999 to 2008. However, in Balitmore City, there was an uptick in emissions from the years 2002 to 2005 before then continuing it's overall down trend. This trend is shown in the chart below:
+```{r}
+baltimore_emissions_summary <- emissions_data %>%
+  filter(fips == '24510') %>%
+  group_by(year) %>%
+  summarize(total_emissions = sum(Emissions))
+plot(
+  baltimore_emissions_summary$year, 
+  baltimore_emissions_summary$total_emissions, 
+  pch=16, ylab = 'Total Emissions in tons', 
+  xlab = 'Year',
+  main = 'Total Emissions in Baltimore City, MD'
+)
+lines(baltimore_emissions_summary$year, baltimore_emissions_summary$total_emissions)
+```
+
+In Baltimore City, MD, of the four types of sources, three have seen a total decrease in emissions and one has seen a total increase in emissions. The three that saw total decreases include the nonpoint, non-road, and on-road sources. However, the point source did see an overall increase in emissions rising from 296 total tons in 1999 to 569 total tons in 2008. Despite this overall increase, however the point source did see a massive decrease from it's 2005 max of 1,202 total tons.
+
+Of the sources that saw a total decrease in emissions only the on-road source saw decreases every year from 1999 - 2008 (347, 134, 130, 88, respectively). The non-road source saw an increase in emissions from 2002 - 2005 from 241 total tons to 249 total tons and the nonpoint source had the same total emissions of 1,510 total tons from 2002 - 2005.
+
+```{r}
+emissions_by_type <- emissions_data %>%
+  filter(fips == '24510') %>%
+  group_by(year, type) %>%
+  summarize(total_emissions = sum(Emissions))
+
+ggplot(emissions_by_type, aes(x = year, y =  total_emissions, col = type)) +
+  geom_point() +
+  geom_line() +
+  labs(title = 'Total Emissions by Source (Baltimore City, MD)', x = 'Year', y = 'Total Emissions (tons)') +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+When looking at coal specific related sources, we see that the total emissions have _drastically_ decreased from 1999 to 2008 from 572,126 total tons to 343,432 total tons. However, like some of the other data that we've seen, there was an uptick from 2002 to 2005 when total emissions went from 546,789 to 552,881 total tons.
+
+```{r}
+emissions_data <- merge(x = emissions_data, y = classification_codes, by = "SCC", all.x = TRUE)
+coal_emissions <- emissions_data %>%
+  filter(grepl('Coal', EI.Sector))
+
+coal_emission_summary <- coal_emissions %>%
+  group_by(year) %>%
+  summarize(total_emissions = sum(Emissions))
+
+ggplot(coal_emission_summary, aes(x = year, y =  total_emissions)) +
+  geom_point() +
+  geom_line() +
+  labs(title = 'Total Emissions from Coal Combustion Related Sources', x = 'Year', y = 'Total Emissions (tons)') +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+If we look at the total emissions from motor vehicle sources in Baltimore City, MD, we see that those sources have drastically decreased from 1999 to 2008 dropping from 346 to 88 total tons. This is visualized in the chart below:
+
+```{r}
+motor_vehicle_emissions <- emissions_data %>%
+  filter(fips == '24510' & type == 'ON-ROAD') %>%
+  group_by(year) %>%
+  summarize(total_emissions = sum(Emissions))
+
+ggplot(motor_vehicle_emissions, aes(x = year, y = total_emissions)) +
+  geom_point() +
+  geom_line() +
+  labs(title = 'Total Motor Vehicle Emission in Baltimore City, MD', x = 'Year', y = 'Total Emissions (tons)') +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+Finally, when we compare Baltimore City to Los Angeles County we see that from 1999 to 2008 Baltimore saw a decrease in motor vehicle emissions from 347 to 88 tons, while Los Angeles County saw an increase from 3,931 to 4,101 tons. This represents a 74% decrease in Baltimore City and a 4% increase in Los Angeles County. Therefore, we see that Baltimore City saw the greatest percentage change (74% vs. 4%) and even the greatest absolute change (259 vs 170 tons)
+
+```{r}
+la_baltimore_emissions <- emissions_data %>%
+  filter((fips == '24510' | fips == '06037') & type == 'ON-ROAD') %>%
+  mutate(city_name = ifelse(fips == '24510', 'Baltimore', 'Los Angeles')) %>%
+  group_by(year, city_name) %>%
+  summarize(total_emissions = sum(Emissions))
+
+ggplot(la_baltimore_emissions, aes(x = year, y =  total_emissions, col = city_name)) +
+  geom_point() +
+  geom_line() +
+  labs(title = 'Motor Vehicle Emissions in Baltimore City, MD and Los Angeles County, CA', x = 'Year', y = 'Total Emissions (tons)', col = 'City') +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+
