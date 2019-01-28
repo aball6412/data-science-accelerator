@@ -1,0 +1,46 @@
+---
+title: "APM Analysis"
+output: html_notebook
+---
+
+```{r echo=FALSE}
+library(dplyr)
+library(ggplot2)
+library(caret)
+```
+
+```{r}
+master_data <- read.csv('data/HDdata.csv')
+```
+
+### Preprocess Data
+```{r}
+# Split out the dependent variable
+heart_data <- master_data[, 1:10]
+y <- master_data[,11]
+
+# Split out training and test data
+training_indexes <- createDataPartition(y, p=.70, list = F)
+X_train <- heart_data[training_indexes, 1:10]
+y_train <- y[training_indexes]
+X_test <- heart_data[-training_indexes, 1:10]
+y_test <- y[-training_indexes]
+```
+
+### Initial Analysis
+In your data are there:
+	a. NAs?
+	Yes, there are 10 NAs in the age column. All other columns do not have any NA values.
+	
+	b. categorical values?
+	No, there are no categorical values/variables. Some columns could have been categorical,   but they have already been encoded numerically.
+	
+	c. binary values?
+	Yes, the sex, fbs, and exang variables contain binary values.
+	
+	d. numeric (real number) values?
+  Yes, all columns contain numberic values. Furthermore, all columns are type integer       except for the oldpeak variable which is type double. 
+
+
+
+
