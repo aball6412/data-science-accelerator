@@ -187,40 +187,124 @@ $(document).ready(function () {
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<div id="model-type" class="section level3">
+<h3>Model Type</h3>
+<p>For this model we’ll be using a logistic regression model since this problem is a binary classification problem.</p>
+</div>
+<div id="initial-analysis" class="section level3">
+<h3>Initial Analysis</h3>
+<p>In your data are there: NA values There are 10 NAs in the age column. All other columns do not have any NA values. Since the missing values are such a small percentage of the overall data we will simply remove those observations for this analysis.</p>
+<p>Categorical values Tthere are no categorical values/variables. Some columns could have been categorical, but they have already been encoded numerically.</p>
+<p>Binary values Yes, the <code>sex</code>, <code>fbs</code>, and <code>exang</code> variables contain binary values.</p>
+<p>Numeric (real number) values All columns contain numberic values. Furthermore, all columns are type integer except for the oldpeak variable which is type double.</p>
+</div>
 <div id="preprocess-data" class="section level3">
 <h3>Preprocess Data</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBTcGxpdCBvdXQgdGhlIGRlcGVuZGVudCB2YXJpYWJsZVxuaGVhcnRfZGF0YSA8LSBtYXN0ZXJfZGF0YVssIDE6MTBdXG55IDwtIG1hc3Rlcl9kYXRhWywxMV1cblxuIyBTcGxpdCBvdXQgdHJhaW5pbmcgYW5kIHRlc3QgZGF0YVxudHJhaW5pbmdfaW5kZXhlcyA8LSBjcmVhdGVEYXRhUGFydGl0aW9uKHksIHA9LjcwLCBsaXN0ID0gRilcblhfdHJhaW4gPC0gaGVhcnRfZGF0YVt0cmFpbmluZ19pbmRleGVzLCAxOjEwXVxueV90cmFpbiA8LSB5W3RyYWluaW5nX2luZGV4ZXNdXG5YX3Rlc3QgPC0gaGVhcnRfZGF0YVstdHJhaW5pbmdfaW5kZXhlcywgMToxMF1cbnlfdGVzdCA8LSB5Wy10cmFpbmluZ19pbmRleGVzXVxuYGBgIn0= -->
-<pre class="r"><code># Split out the dependent variable
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBSZW1vdmUgbWlzc2luZyB2YWx1ZXNcbm1hc3Rlcl9kYXRhIDwtIG1hc3Rlcl9kYXRhICU+JVxuICBmaWx0ZXIoIWlzLm5hKGFnZSkpXG4jIFNwbGl0IG91dCB0aGUgZGVwZW5kZW50IHZhcmlhYmxlXG5oZWFydF9kYXRhIDwtIG1hc3Rlcl9kYXRhWywgMToxMF1cbnkgPC0gbWFzdGVyX2RhdGFbLDExXVxuIyBTcGxpdCBvdXQgdHJhaW5pbmcgYW5kIHRlc3QgZGF0YVxuc2V0LnNlZWQoMTIpXG50cmFpbmluZ19pbmRleGVzIDwtIGNyZWF0ZURhdGFQYXJ0aXRpb24oeSwgcD0uNzAsIGxpc3QgPSBGKVxuWF90cmFpbiA8LSBoZWFydF9kYXRhW3RyYWluaW5nX2luZGV4ZXMsIDE6MTBdXG55X3RyYWluIDwtIHlbdHJhaW5pbmdfaW5kZXhlc11cblhfdGVzdCA8LSBoZWFydF9kYXRhWy10cmFpbmluZ19pbmRleGVzLCAxOjEwXVxueV90ZXN0IDwtIHlbLXRyYWluaW5nX2luZGV4ZXNdXG4jIFByZXByb2Nlc3NpbmdcbiMgU2NhbGUgZGF0YVxuWF90cmFpbiA8LSBzY2FsZShYX3RyYWluLCBjZW50ZXIgPSBGKVxuWF90ZXN0IDwtIHNjYWxlKFhfdGVzdCwgY2VudGVyPSBGLCBzY2FsZT1hdHRyKFhfdHJhaW4sIFwic2NhbGVkOnNjYWxlXCIpKVxuWF90cmFpbiA8LSBhcy5kYXRhLmZyYW1lKFhfdHJhaW4pXG5YX3Rlc3QgPC0gYXMuZGF0YS5mcmFtZShYX3Rlc3QpXG5gYGAifQ== -->
+<pre class="r"><code># Remove missing values
+master_data &lt;- master_data %&gt;%
+  filter(!is.na(age))
+# Split out the dependent variable
 heart_data &lt;- master_data[, 1:10]
 y &lt;- master_data[,11]
-
 # Split out training and test data
+set.seed(12)
 training_indexes &lt;- createDataPartition(y, p=.70, list = F)
 X_train &lt;- heart_data[training_indexes, 1:10]
 y_train &lt;- y[training_indexes]
 X_test &lt;- heart_data[-training_indexes, 1:10]
-y_test &lt;- y[-training_indexes]</code></pre>
+y_test &lt;- y[-training_indexes]
+# Preprocessing
+# Scale data
+X_train &lt;- scale(X_train, center = F)
+X_test &lt;- scale(X_test, center= F, scale=attr(X_train, &quot;scaled:scale&quot;))
+X_train &lt;- as.data.frame(X_train)
+X_test &lt;- as.data.frame(X_test)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="initial-analysis" class="section level3">
-<h3>Initial Analysis</h3>
-<p>In your data are there: a. NAs? Yes, there are 10 NAs in the age column. All other columns do not have any NA values.</p>
-<pre><code>b. categorical values?
-No, there are no categorical values/variables. Some columns could have been categorical,   but they have already been encoded numerically.
-
-c. binary values?
-Yes, the sex, fbs, and exang variables contain binary values.
-
-d. numeric (real number) values?</code></pre>
-<p>Yes, all columns contain numberic values. Furthermore, all columns are type integer except for the oldpeak variable which is type double.</p>
+<div id="fit-a-logistic-regression-model" class="section level3">
+<h3>Fit a logistic regression model</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZml0IDwtIGdsbSh5X3RyYWlufmFnZStzZXgrY3ArdHJlc3RicHMrY2hvbCtmYnMrcmVzdGVjZyt0aGFsYWNoK2V4YW5nK29sZHBlYWssZGF0YT1YX3RyYWluLGZhbWlseT1iaW5vbWlhbCgpKVxuYGBgIn0= -->
+<pre class="r"><code>fit &lt;- glm(y_train~age+sex+cp+trestbps+chol+fbs+restecg+thalach+exang+oldpeak,data=X_train,family=binomial())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="get-predictions-on-the-training-data" class="section level3">
+<h3>Get predictions on the training data</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBTZXQgYSB0aHJlc2hvbGQgZm9yIHByZWRpY3Rpb25zXG50aHJlc2hvbGQgPC0gMC41XG4jIFRyYWluIFByZWRpY3Rpb25zXG50cmFpbl9wcmVkaWN0aW9ucyA8LSBwcmVkaWN0KGZpdCwgWF90cmFpbiwgdHlwZSA9ICdyZXNwb25zZScpXG50cmFpbl9wcmVkaWN0aW9ucyA8LSBhcy5udW1lcmljKHRyYWluX3ByZWRpY3Rpb25zID4gdGhyZXNob2xkKVxudHJhaW5fY20gPC0gY29uZnVzaW9uTWF0cml4KGFzLmZhY3Rvcih0cmFpbl9wcmVkaWN0aW9ucyksIGFzLmZhY3Rvcih5X3RyYWluKSlcbmBgYCJ9 -->
+<pre class="r"><code># Set a threshold for predictions
+threshold &lt;- 0.5
+# Train Predictions
+train_predictions &lt;- predict(fit, X_train, type = 'response')
+train_predictions &lt;- as.numeric(train_predictions &gt; threshold)
+train_cm &lt;- confusionMatrix(as.factor(train_predictions), as.factor(y_train))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="training-results" class="section level3">
+<h3>Training Results</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudHJhaW5fYWNjdXJhY3kgPC0gdHJhaW5fY20kb3ZlcmFsbFsnQWNjdXJhY3knXVxudHJhaW5fc2Vuc2l0aXZpdHkgPC0gdHJhaW5fY20kYnlDbGFzc1snU2Vuc2l0aXZpdHknXVxudHJhaW5fc3BlY2lmaWNpdHkgPC0gdHJhaW5fY20kYnlDbGFzc1snU3BlY2lmaWNpdHknXVxudHJhaW5fcHB2IDwtIHRyYWluX2NtJGJ5Q2xhc3NbJ1BvcyBQcmVkIFZhbHVlJ11cbnRyYWluX25wdiA8LSB0cmFpbl9jbSRieUNsYXNzWydOZWcgUHJlZCBWYWx1ZSddXG5gYGAifQ== -->
+<pre class="r"><code>train_accuracy &lt;- train_cm$overall['Accuracy']
+train_sensitivity &lt;- train_cm$byClass['Sensitivity']
+train_specificity &lt;- train_cm$byClass['Specificity']
+train_ppv &lt;- train_cm$byClass['Pos Pred Value']
+train_npv &lt;- train_cm$byClass['Neg Pred Value']</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>Accuracy</strong>: 0.8203883</p>
+<p><strong>Sensitivity</strong>: 0.8301887</p>
+<p><strong>Specificity</strong>: 0.81</p>
+<p><strong>PPV</strong>: 0.8224299</p>
+<p><strong>NPV</strong>: 0.8181818</p>
+</div>
+<div id="get-predictions-on-the-test-data" class="section level3">
+<h3>Get predictions on the test data</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBUZXN0IFByZWRpY3Rpb25zXG5wcmVkaWN0aW9ucyA8LSBwcmVkaWN0KGZpdCwgWF90ZXN0LCB0eXBlID0gJ3Jlc3BvbnNlJylcbnByZWRpY3Rpb25zIDwtIGFzLm51bWVyaWMocHJlZGljdGlvbnMgPiB0aHJlc2hvbGQpXG5jbSA8LSBjb25mdXNpb25NYXRyaXgoYXMuZmFjdG9yKHByZWRpY3Rpb25zKSwgYXMuZmFjdG9yKHlfdGVzdCkpXG5gYGAifQ== -->
+<pre class="r"><code># Test Predictions
+predictions &lt;- predict(fit, X_test, type = 'response')
+predictions &lt;- as.numeric(predictions &gt; threshold)
+cm &lt;- confusionMatrix(as.factor(predictions), as.factor(y_test))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="test-data-results" class="section level3">
+<h3>Test data results</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWNjdXJhY3kgPC0gY20kb3ZlcmFsbFsnQWNjdXJhY3knXVxuc2Vuc2l0aXZpdHkgPC0gY20kYnlDbGFzc1snU2Vuc2l0aXZpdHknXVxuc3BlY2lmaWNpdHkgPC0gY20kYnlDbGFzc1snU3BlY2lmaWNpdHknXVxucHB2IDwtIGNtJGJ5Q2xhc3NbJ1BvcyBQcmVkIFZhbHVlJ11cbm5wdiA8LSBjbSRieUNsYXNzWydOZWcgUHJlZCBWYWx1ZSddXG5gYGAifQ== -->
+<pre class="r"><code>accuracy &lt;- cm$overall['Accuracy']
+sensitivity &lt;- cm$byClass['Sensitivity']
+specificity &lt;- cm$byClass['Specificity']
+ppv &lt;- cm$byClass['Pos Pred Value']
+npv &lt;- cm$byClass['Neg Pred Value']</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>Accuracy</strong>: 0.7471264</p>
+<p><strong>Sensitivity</strong>: 0.6730769</p>
+<p><strong>Specificity</strong>: 0.8571429</p>
+<p><strong>PPV</strong>: 0.875</p>
+<p><strong>NPV</strong>: 0.6382979</p>
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiQVBNIEFuYWx5c2lzIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgpgYGB7ciBlY2hvPUZBTFNFfQpsaWJyYXJ5KGRwbHlyKQpsaWJyYXJ5KGdncGxvdDIpCmxpYnJhcnkoY2FyZXQpCmBgYAoKYGBge3J9Cm1hc3Rlcl9kYXRhIDwtIHJlYWQuY3N2KCdkYXRhL0hEZGF0YS5jc3YnKQpgYGAKCiMjIyBQcmVwcm9jZXNzIERhdGEKYGBge3J9CiMgU3BsaXQgb3V0IHRoZSBkZXBlbmRlbnQgdmFyaWFibGUKaGVhcnRfZGF0YSA8LSBtYXN0ZXJfZGF0YVssIDE6MTBdCnkgPC0gbWFzdGVyX2RhdGFbLDExXQoKIyBTcGxpdCBvdXQgdHJhaW5pbmcgYW5kIHRlc3QgZGF0YQp0cmFpbmluZ19pbmRleGVzIDwtIGNyZWF0ZURhdGFQYXJ0aXRpb24oeSwgcD0uNzAsIGxpc3QgPSBGKQpYX3RyYWluIDwtIGhlYXJ0X2RhdGFbdHJhaW5pbmdfaW5kZXhlcywgMToxMF0KeV90cmFpbiA8LSB5W3RyYWluaW5nX2luZGV4ZXNdClhfdGVzdCA8LSBoZWFydF9kYXRhWy10cmFpbmluZ19pbmRleGVzLCAxOjEwXQp5X3Rlc3QgPC0geVstdHJhaW5pbmdfaW5kZXhlc10KYGBgCgojIyMgSW5pdGlhbCBBbmFseXNpcwpJbiB5b3VyIGRhdGEgYXJlIHRoZXJlOgoJYS4gTkFzPwoJWWVzLCB0aGVyZSBhcmUgMTAgTkFzIGluIHRoZSBhZ2UgY29sdW1uLiBBbGwgb3RoZXIgY29sdW1ucyBkbyBub3QgaGF2ZSBhbnkgTkEgdmFsdWVzLgoJCgliLiBjYXRlZ29yaWNhbCB2YWx1ZXM/CglObywgdGhlcmUgYXJlIG5vIGNhdGVnb3JpY2FsIHZhbHVlcy92YXJpYWJsZXMuIFNvbWUgY29sdW1ucyBjb3VsZCBoYXZlIGJlZW4gY2F0ZWdvcmljYWwsICAgYnV0IHRoZXkgaGF2ZSBhbHJlYWR5IGJlZW4gZW5jb2RlZCBudW1lcmljYWxseS4KCQoJYy4gYmluYXJ5IHZhbHVlcz8KCVllcywgdGhlIHNleCwgZmJzLCBhbmQgZXhhbmcgdmFyaWFibGVzIGNvbnRhaW4gYmluYXJ5IHZhbHVlcy4KCQoJZC4gbnVtZXJpYyAocmVhbCBudW1iZXIpIHZhbHVlcz8KICBZZXMsIGFsbCBjb2x1bW5zIGNvbnRhaW4gbnVtYmVyaWMgdmFsdWVzLiBGdXJ0aGVybW9yZSwgYWxsIGNvbHVtbnMgYXJlIHR5cGUgaW50ZWdlciAgICAgICBleGNlcHQgZm9yIHRoZSBvbGRwZWFrIHZhcmlhYmxlIHdoaWNoIGlzIHR5cGUgZG91YmxlLiAKCgoKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQVBNIEFuYWx5c2lzIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgpgYGB7ciBlY2hvPUZBTFNFfQpsaWJyYXJ5KGRwbHlyKQpsaWJyYXJ5KGdncGxvdDIpCmxpYnJhcnkoY2FyZXQpCmBgYAoKYGBge3J9Cm1hc3Rlcl9kYXRhIDwtIHJlYWQuY3N2KCdkYXRhL0hEZGF0YS5jc3YnKQpgYGAKCiMjIyBNb2RlbCBUeXBlCkZvciB0aGlzIG1vZGVsIHdlJ2xsIGJlIHVzaW5nIGEgbG9naXN0aWMgcmVncmVzc2lvbiBtb2RlbCBzaW5jZSB0aGlzIHByb2JsZW0gaXMgYSBiaW5hcnkgY2xhc3NpZmljYXRpb24gcHJvYmxlbS4KCiMjIyBJbml0aWFsIEFuYWx5c2lzCkluIHlvdXIgZGF0YSBhcmUgdGhlcmU6Ck5BIHZhbHVlcwpUaGVyZSBhcmUgMTAgTkFzIGluIHRoZSBhZ2UgY29sdW1uLiBBbGwgb3RoZXIgY29sdW1ucyBkbyBub3QgaGF2ZSBhbnkgTkEgdmFsdWVzLiBTaW5jZSB0aGUgbWlzc2luZyB2YWx1ZXMgYXJlIHN1Y2ggYSBzbWFsbCBwZXJjZW50YWdlIG9mIHRoZSBvdmVyYWxsIGRhdGEgd2Ugd2lsbCBzaW1wbHkgcmVtb3ZlIHRob3NlIG9ic2VydmF0aW9ucyBmb3IgdGhpcyBhbmFseXNpcy4KCQpDYXRlZ29yaWNhbCB2YWx1ZXMKVHRoZXJlIGFyZSBubyBjYXRlZ29yaWNhbCB2YWx1ZXMvdmFyaWFibGVzLiBTb21lIGNvbHVtbnMgY291bGQgaGF2ZSBiZWVuIGNhdGVnb3JpY2FsLCBidXQgdGhleSBoYXZlIGFscmVhZHkgYmVlbiBlbmNvZGVkIG51bWVyaWNhbGx5LgoJCkJpbmFyeSB2YWx1ZXMKWWVzLCB0aGUgYHNleGAsIGBmYnNgLCBhbmQgYGV4YW5nYCB2YXJpYWJsZXMgY29udGFpbiBiaW5hcnkgdmFsdWVzLgoJCk51bWVyaWMgKHJlYWwgbnVtYmVyKSB2YWx1ZXMKQWxsIGNvbHVtbnMgY29udGFpbiBudW1iZXJpYyB2YWx1ZXMuIEZ1cnRoZXJtb3JlLCBhbGwgY29sdW1ucyBhcmUgdHlwZSBpbnRlZ2VyICAgICAgIGV4Y2VwdCBmb3IgdGhlIG9sZHBlYWsgdmFyaWFibGUgd2hpY2ggaXMgdHlwZSBkb3VibGUuIAoKCiMjIyBQcmVwcm9jZXNzIERhdGEKYGBge3J9CiMgUmVtb3ZlIG1pc3NpbmcgdmFsdWVzCm1hc3Rlcl9kYXRhIDwtIG1hc3Rlcl9kYXRhICU+JQogIGZpbHRlcighaXMubmEoYWdlKSkKCiMgU3BsaXQgb3V0IHRoZSBkZXBlbmRlbnQgdmFyaWFibGUKaGVhcnRfZGF0YSA8LSBtYXN0ZXJfZGF0YVssIDE6MTBdCnkgPC0gbWFzdGVyX2RhdGFbLDExXQoKIyBTcGxpdCBvdXQgdHJhaW5pbmcgYW5kIHRlc3QgZGF0YQpzZXQuc2VlZCgxMikKdHJhaW5pbmdfaW5kZXhlcyA8LSBjcmVhdGVEYXRhUGFydGl0aW9uKHksIHA9LjcwLCBsaXN0ID0gRikKWF90cmFpbiA8LSBoZWFydF9kYXRhW3RyYWluaW5nX2luZGV4ZXMsIDE6MTBdCnlfdHJhaW4gPC0geVt0cmFpbmluZ19pbmRleGVzXQpYX3Rlc3QgPC0gaGVhcnRfZGF0YVstdHJhaW5pbmdfaW5kZXhlcywgMToxMF0KeV90ZXN0IDwtIHlbLXRyYWluaW5nX2luZGV4ZXNdCgojIFByZXByb2Nlc3NpbmcKIyBTY2FsZSBkYXRhClhfdHJhaW4gPC0gc2NhbGUoWF90cmFpbiwgY2VudGVyID0gRikKWF90ZXN0IDwtIHNjYWxlKFhfdGVzdCwgY2VudGVyPSBGLCBzY2FsZT1hdHRyKFhfdHJhaW4sICJzY2FsZWQ6c2NhbGUiKSkKWF90cmFpbiA8LSBhcy5kYXRhLmZyYW1lKFhfdHJhaW4pClhfdGVzdCA8LSBhcy5kYXRhLmZyYW1lKFhfdGVzdCkKYGBgCgojIyMgRml0IGEgbG9naXN0aWMgcmVncmVzc2lvbiBtb2RlbApgYGB7cn0KZml0IDwtIGdsbSh5X3RyYWlufmFnZStzZXgrY3ArdHJlc3RicHMrY2hvbCtmYnMrcmVzdGVjZyt0aGFsYWNoK2V4YW5nK29sZHBlYWssZGF0YT1YX3RyYWluLGZhbWlseT1iaW5vbWlhbCgpKQpgYGAKCiMjIyBHZXQgcHJlZGljdGlvbnMgb24gdGhlIHRyYWluaW5nIGRhdGEKYGBge3J9CiMgU2V0IGEgdGhyZXNob2xkIGZvciBwcmVkaWN0aW9ucwp0aHJlc2hvbGQgPC0gMC41CgojIFRyYWluIFByZWRpY3Rpb25zCnRyYWluX3ByZWRpY3Rpb25zIDwtIHByZWRpY3QoZml0LCBYX3RyYWluLCB0eXBlID0gJ3Jlc3BvbnNlJykKdHJhaW5fcHJlZGljdGlvbnMgPC0gYXMubnVtZXJpYyh0cmFpbl9wcmVkaWN0aW9ucyA+IHRocmVzaG9sZCkKdHJhaW5fY20gPC0gY29uZnVzaW9uTWF0cml4KGFzLmZhY3Rvcih0cmFpbl9wcmVkaWN0aW9ucyksIGFzLmZhY3Rvcih5X3RyYWluKSkKYGBgCgojIyMgVHJhaW5pbmcgUmVzdWx0cwpgYGB7cn0KdHJhaW5fYWNjdXJhY3kgPC0gdHJhaW5fY20kb3ZlcmFsbFsnQWNjdXJhY3knXQp0cmFpbl9zZW5zaXRpdml0eSA8LSB0cmFpbl9jbSRieUNsYXNzWydTZW5zaXRpdml0eSddCnRyYWluX3NwZWNpZmljaXR5IDwtIHRyYWluX2NtJGJ5Q2xhc3NbJ1NwZWNpZmljaXR5J10KdHJhaW5fcHB2IDwtIHRyYWluX2NtJGJ5Q2xhc3NbJ1BvcyBQcmVkIFZhbHVlJ10KdHJhaW5fbnB2IDwtIHRyYWluX2NtJGJ5Q2xhc3NbJ05lZyBQcmVkIFZhbHVlJ10KYGBgCl9fQWNjdXJhY3lfXzogYHIgdHJhaW5fYWNjdXJhY3lgCgpfX1NlbnNpdGl2aXR5X186IGByIHRyYWluX3NlbnNpdGl2aXR5YAoKX19TcGVjaWZpY2l0eV9fOiBgciB0cmFpbl9zcGVjaWZpY2l0eWAgCgpfX1BQVl9fOiBgciB0cmFpbl9wcHZgCgpfX05QVl9fOiBgciB0cmFpbl9ucHZgCgoKIyMjIEdldCBwcmVkaWN0aW9ucyBvbiB0aGUgdGVzdCBkYXRhCmBgYHtyfQojIFRlc3QgUHJlZGljdGlvbnMKcHJlZGljdGlvbnMgPC0gcHJlZGljdChmaXQsIFhfdGVzdCwgdHlwZSA9ICdyZXNwb25zZScpCnByZWRpY3Rpb25zIDwtIGFzLm51bWVyaWMocHJlZGljdGlvbnMgPiB0aHJlc2hvbGQpCmNtIDwtIGNvbmZ1c2lvbk1hdHJpeChhcy5mYWN0b3IocHJlZGljdGlvbnMpLCBhcy5mYWN0b3IoeV90ZXN0KSkKYGBgCgojIyMgVGVzdCBkYXRhIHJlc3VsdHMKYGBge3J9CmFjY3VyYWN5IDwtIGNtJG92ZXJhbGxbJ0FjY3VyYWN5J10Kc2Vuc2l0aXZpdHkgPC0gY20kYnlDbGFzc1snU2Vuc2l0aXZpdHknXQpzcGVjaWZpY2l0eSA8LSBjbSRieUNsYXNzWydTcGVjaWZpY2l0eSddCnBwdiA8LSBjbSRieUNsYXNzWydQb3MgUHJlZCBWYWx1ZSddCm5wdiA8LSBjbSRieUNsYXNzWydOZWcgUHJlZCBWYWx1ZSddCmBgYApfX0FjY3VyYWN5X186IGByIGFjY3VyYWN5YAoKX19TZW5zaXRpdml0eV9fOiBgciBzZW5zaXRpdml0eWAKCl9fU3BlY2lmaWNpdHlfXzogYHIgc3BlY2lmaWNpdHlgIAoKX19QUFZfXzogYHIgcHB2YAoKX19OUFZfXzogYHIgbnB2YAo=</div>
 
 
 

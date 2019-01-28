@@ -34,7 +34,7 @@ threshold <- 0.5
 # Train Predictions
 train_predictions <- predict(fit, X_train, type = 'response')
 train_predictions <- as.numeric(train_predictions > threshold)
-confusionMatrix(as.factor(train_predictions), as.factor(y_train))
+train_cm <- confusionMatrix(as.factor(train_predictions), as.factor(y_train))
 
 # Test Predictions
 predictions <- predict(fit, X_test, type = 'response')
