@@ -1,0 +1,3 @@
+## Question: Is there a quantitative way to predict whether a particular visitor to the personal loans rate table will click on a product or not?
+
+This is an important question for the business to understand for a couple of reasons. The first is to get a better ideas as to which users are likely to _potentially_ convert. This might allow the business to pay (more) money to acquire such customers if the economics works in their favor. Second, it might allow them to figure out _why_ those who aren't converting aren't. For example, are those users on the wrong page? Will getting those visitors to another page increase conversions? There are many further questions that can be asked after doing an analysis such as this.
